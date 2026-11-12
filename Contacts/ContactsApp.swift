@@ -6,27 +6,21 @@
 //
 
 import SwiftUI
-import SwiftData
 
 @main
 struct ContactsApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    @State private var model = ContactsModel()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environment(model)
         }
-        .modelContainer(sharedModelContainer)
+        .commands {
+            ContactsCommands(model: model)
+        }
+        #if os(macOS)
+        .defaultSize(width: 980, height: 640)
+        #endif
     }
 }
